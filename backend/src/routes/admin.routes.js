@@ -5,6 +5,32 @@ const authMiddleware = require('../middleware/auth.middleware');
 const adminMiddleware = require('../middleware/admin.middleware');
 const { runDraw } = require('../services/drawService');
 
+// POST /api/admin/draw/run-now
+// Allows manual run by admin OR automated run by Vercel Cron (via secret)
+router.post('/draw/run-now', async (req, res, next) => {
+    // Check for Vercel Cron secret bypass
+    const cronSecret = req.headers['x-vercel-cron-secret'];
+    const isCron = process.env.CRON_SECRET && cronSecret === process.env.CRON_SECRET;
+
+    if (isCron) {
+        return next();
+    }
+
+    // Otherwise, fall through to standard admin auth
+    authMiddleware(req, res, () => {
+        adminMiddleware(req, res, next);
+    });
+}, async (req, res) => {
+    try {
+        const { date } = req.body; // Optional date override
+        const result = await runDraw(date);
+        if (!result) return res.status(400).json({ message: 'Draw already completed or no tickets found for this date.' });
+        res.json({ message: 'Draw completed successfully', result });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 router.use(authMiddleware, adminMiddleware);
 
 // GET /api/admin/stats
@@ -66,18 +92,6 @@ router.get('/reports/sales', async (req, res) => {
         res.json(sales);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// POST /api/admin/draw/run-now
-router.post('/draw/run-now', async (req, res) => {
-    try {
-        const { date } = req.body; // Optional date override
-        const result = await runDraw(date);
-        if (!result) return res.status(400).json({ message: 'Draw already completed or no tickets found for this date.' });
-        res.json({ message: 'Draw completed successfully', result });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
     }
 });
 
