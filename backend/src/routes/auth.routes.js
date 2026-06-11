@@ -42,7 +42,7 @@ router.post('/register', authLimiter, [
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: err.name, details: err.message });
     }
 });
 
@@ -71,7 +71,7 @@ router.post('/login', authLimiter, [
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: err.name, details: err.message });
     }
 });
 
@@ -97,7 +97,7 @@ router.post('/forgot-password', authLimiter, [
 
         res.json({ message: 'If that email exists, a reset link was sent.' });
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: err.name, details: err.message });
     }
 });
 
@@ -120,7 +120,7 @@ router.post('/reset-password', authLimiter, [
         await user.save();
         res.json({ message: 'Password reset successful' });
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: err.name, details: err.message });
     }
 });
 
