@@ -112,112 +112,170 @@ const AdminDashboard = () => {
                 </button>
             </header>
 
-            {/* Stats Cards */}
-            <div className="dashboard-grid" style={{ marginBottom: '40px' }}>
-                <div className="premium-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Users color="var(--primary)" />
-                        <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>Active Platform</span>
+            {view === 'overview' ? (
+                <>
+                    {/* Stats Cards */}
+                    <div className="dashboard-grid" style={{ marginBottom: '40px' }}>
+                        <div className="premium-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Users color="var(--primary)" />
+                                <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>Active Platform</span>
+                            </div>
+                            <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.userCount}</h2>
+                            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Registered Users</p>
+                        </div>
+                        <div className="premium-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Ticket color="var(--primary)" />
+                                <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>All-time</span>
+                            </div>
+                            <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.ticketCount}</h2>
+                            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Tickets Sold</p>
+                        </div>
+                        <div className="premium-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <DollarSign color="var(--primary)" />
+                                <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>ETB</span>
+                            </div>
+                            <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.totalRevenue}</h2>
+                            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Revenue</p>
+                        </div>
+                        <div className="premium-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <TrendingUp color="var(--primary)" />
+                                <span style={{ color: stats.netProfit >= 0 ? 'var(--secondary)' : 'var(--danger)', fontSize: '0.8rem' }}>Net</span>
+                            </div>
+                            <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.netProfit}</h2>
+                            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>System Profit/Loss</p>
+                        </div>
                     </div>
-                    <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.userCount}</h2>
-                    <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Registered Users</p>
-                </div>
-                <div className="premium-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Ticket color="var(--primary)" />
-                        <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>All-time</span>
-                    </div>
-                    <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.ticketCount}</h2>
-                    <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Tickets Sold</p>
-                </div>
-                <div className="premium-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <DollarSign color="var(--primary)" />
-                        <span style={{ color: 'var(--secondary)', fontSize: '0.8rem' }}>ETB</span>
-                    </div>
-                    <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.totalRevenue}</h2>
-                    <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>Total Revenue</p>
-                </div>
-                <div className="premium-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <TrendingUp color="var(--primary)" />
-                        <span style={{ color: stats.netProfit >= 0 ? 'var(--secondary)' : 'var(--danger)', fontSize: '0.8rem' }}>Net</span>
-                    </div>
-                    <h2 style={{ fontSize: '2rem', margin: '10px 0' }}>{stats.netProfit}</h2>
-                    <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>System Profit/Loss</p>
-                </div>
-            </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
-                {/* User Management */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+                        {/* User Management */}
+                        <section className="premium-card" style={{ padding: '0' }}>
+                            <div style={{ padding: '2rem', borderBottom: '1px solid var(--glass-border)' }}>
+                                <h3>User Management</h3>
+                            </div>
+                            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                    <thead style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--text-dim)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                                        <tr>
+                                            <th style={{ padding: '15px 20px' }}>User</th>
+                                            <th style={{ padding: '15px 20px' }}>Phone</th>
+                                            <th style={{ padding: '15px 20px' }}>Wallet</th>
+                                            <th style={{ padding: '15px 20px' }}>Status</th>
+                                            <th style={{ padding: '15px 20px' }}>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map(u => (
+                                            <tr key={u.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                                                <td style={{ padding: '15px 20px' }}>
+                                                    <div style={{ fontWeight: '600' }}>{u.fullName}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{u.email}</div>
+                                                </td>
+                                                <td style={{ padding: '15px 20px' }}>{u.phone}</td>
+                                                <td style={{ padding: '15px 20px' }}>{u.walletBalance} ETB</td>
+                                                <td style={{ padding: '15px 20px' }}>
+                                                    <span className={`badge ${u.isActive ? 'badge-success' : 'badge-danger'}`}>
+                                                        {u.isActive ? 'Active' : 'Suspended'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '15px 20px' }}>
+                                                    <button
+                                                        onClick={() => handleToggleStatus(u.id, u.isActive)}
+                                                        style={{ color: u.isActive ? 'var(--danger)' : 'var(--secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
+                                                    >
+                                                        {u.isActive ? 'Suspend' : 'Activate'}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        {/* Revenue Chart */}
+                        <section>
+                            <div className="premium-card" style={{ height: '100%' }}>
+                                <h3>Revenue Trend</h3>
+                                <div style={{ height: '300px', marginTop: '20px' }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={salesData}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                            <XAxis dataKey="drawDate" stroke="var(--text-dim)" fontSize={10} tickLine={false} axisLine={false} />
+                                            <YAxis stroke="var(--text-dim)" fontSize={10} tickLine={false} axisLine={false} />
+                                            <Tooltip
+                                                contentStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}
+                                                itemStyle={{ color: 'var(--primary)' }}
+                                            />
+                                            <Line type="monotone" dataKey="totalRevenue" stroke="var(--primary)" strokeWidth={3} dot={{ r: 4, fill: 'var(--primary)' }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </>
+            ) : (
                 <section className="premium-card" style={{ padding: '0' }}>
                     <div style={{ padding: '2rem', borderBottom: '1px solid var(--glass-border)' }}>
-                        <h3>User Management</h3>
+                        <h3>Pending Ticket Approvals</h3>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>New requests waiting for bank payment details</p>
                     </div>
-                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                             <thead style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--text-dim)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
                                 <tr>
+                                    <th style={{ padding: '15px 20px' }}>Ticket #</th>
                                     <th style={{ padding: '15px 20px' }}>User</th>
-                                    <th style={{ padding: '15px 20px' }}>Phone</th>
-                                    <th style={{ padding: '15px 20px' }}>Wallet</th>
-                                    <th style={{ padding: '15px 20px' }}>Status</th>
-                                    <th style={{ padding: '15px 20px' }}>Action</th>
+                                    <th style={{ padding: '15px 20px' }}>Date</th>
+                                    <th style={{ padding: '15px 20px' }}>Price</th>
+                                    <th style={{ padding: '15px 20px' }}>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {users.map(u => (
-                                    <tr key={u.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                                        <td style={{ padding: '15px 20px' }}>
-                                            <div style={{ fontWeight: '600' }}>{u.fullName}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{u.email}</div>
-                                        </td>
-                                        <td style={{ padding: '15px 20px' }}>{u.phone}</td>
-                                        <td style={{ padding: '15px 20px' }}>{u.walletBalance} ETB</td>
-                                        <td style={{ padding: '15px 20px' }}>
-                                            <span className={`badge ${u.isActive ? 'badge-success' : 'badge-danger'}`}>
-                                                {u.isActive ? 'Active' : 'Suspended'}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '15px 20px' }}>
-                                            <button
-                                                onClick={() => handleToggleStatus(u.id, u.isActive)}
-                                                style={{ color: u.isActive ? 'var(--danger)' : 'var(--secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
-                                            >
-                                                {u.isActive ? 'Suspend' : 'Activate'}
-                                            </button>
-                                        </td>
+                                {pendingTickets.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-dim)' }}>No pending approvals</td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    pendingTickets.map(t => (
+                                        <tr key={t.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                                            <td style={{ padding: '15px 20px' }}>
+                                                <code style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{t.ticketNumber}</code>
+                                            </td>
+                                            <td style={{ padding: '15px 20px' }}>
+                                                <div style={{ fontWeight: '600' }}>{t.User.fullName}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t.User.phone}</div>
+                                            </td>
+                                            <td style={{ padding: '15px 20px' }}>{t.drawDate}</td>
+                                            <td style={{ padding: '15px 20px' }}>{t.price} ETB</td>
+                                            <td style={{ padding: '15px 20px', display: 'flex', gap: '10px' }}>
+                                                <button
+                                                    onClick={() => handleTicketAction(t.id, 'approve')}
+                                                    className="btn-primary"
+                                                    style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'var(--secondary)', minWidth: 'auto' }}
+                                                >
+                                                    Approve & Send Info
+                                                </button>
+                                                <button
+                                                    onClick={() => handleTicketAction(t.id, 'reject')}
+                                                    className="btn-primary"
+                                                    style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'var(--danger)', minWidth: 'auto' }}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </section>
-
-                {/* Revenue Chart */}
-                <section>
-                    <div className="premium-card" style={{ height: '100%' }}>
-                        <h3>Revenue Trend</h3>
-                        <div style={{ height: '300px', marginTop: '20px' }}>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={salesData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                    <XAxis dataKey="drawDate" stroke="var(--text-dim)" fontSize={10} tickLine={false} axisLine={false} />
-                                    <YAxis stroke="var(--text-dim)" fontSize={10} tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}
-                                        itemStyle={{ color: 'var(--primary)' }}
-                                    />
-                                    <Line type="monotone" dataKey="totalRevenue" stroke="var(--primary)" strokeWidth={3} dot={{ r: 4, fill: 'var(--primary)' }} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div style={{ marginTop: '20px', fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-                            <p>Top Performing Draw: <strong>{salesData.reduce((prev, current) => (prev.totalRevenue > current.totalRevenue) ? prev : current, { drawDate: 'N/A', totalRevenue: 0 }).drawDate}</strong></p>
-                        </div>
-                    </div>
-                </section>
-            </div>
+            )}
         </div>
     );
 };
