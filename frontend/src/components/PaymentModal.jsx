@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 const PaymentModal = ({ isOpen, onClose, onPaymentSuccess }) => {
     const [step, setStep] = useState(1); // 1: Amount/Method, 2: OTP, 3: Success
     const [amount, setAmount] = useState(100);
+    const [method, setMethod] = useState('telebirr');
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const PaymentModal = ({ isOpen, onClose, onPaymentSuccess }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await api.post('/payment/initiate', { amount, method: 'telebirr', phone });
+            const res = await api.post('/payment/initiate', { amount, method, phone });
             setReference(res.data.reference);
             setStep(2);
             toast.info('OTP Sent (Mock: 123456)');
@@ -70,14 +71,21 @@ const PaymentModal = ({ isOpen, onClose, onPaymentSuccess }) => {
                                     <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="20" required />
                                 </div>
                                 <div className="input-group">
-                                    <label>Telebirr Phone Number</label>
+                                    <label>Payment Method</label>
+                                    <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                        <button type="button" onClick={() => setMethod('telebirr')} className={`btn-${method === 'telebirr' ? 'primary' : 'secondary'}`} style={{ flex: 1, padding: '8px', fontSize: '0.9rem' }}>Telebirr</button>
+                                        <button type="button" onClick={() => setMethod('cbe')} className={`btn-${method === 'cbe' ? 'primary' : 'secondary'}`} style={{ flex: 1, padding: '8px', fontSize: '0.9rem' }}>CBE</button>
+                                    </div>
+                                </div>
+                                <div className="input-group" style={{ marginTop: '15px' }}>
+                                    <label>{method === 'telebirr' ? 'Telebirr Phone Number' : 'CBE Phone/Account'}</label>
                                     <div style={{ position: 'relative' }}>
                                         <Phone size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)' }} />
-                                        <input type="tel" placeholder="09..." style={{ paddingLeft: '45px' }} value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                                        <input type="tel" placeholder={method === 'telebirr' ? "09..." : "Enter CBE phone or account"} style={{ paddingLeft: '45px' }} value={phone} onChange={(e) => setPhone(e.target.value)} required />
                                     </div>
                                 </div>
                                 <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-                                    {loading ? <Loader2 className="animate-spin" /> : 'Pay with Telebirr'}
+                                    {loading ? <Loader2 className="animate-spin" /> : `Pay with ${method === 'telebirr' ? 'Telebirr' : 'CBE'}`}
                                 </button>
                             </form>
                         </div>
