@@ -32,7 +32,11 @@ router.post('/register', authLimiter, [
         if (existingPhone) return res.status(409).json({ message: 'Phone number already registered' });
 
         const passwordHash = await bcrypt.hash(password, 12);
-        const user = await User.create({ fullName, phone, email, passwordHash });
+
+        // Auto-assign admin role
+        const role = (email === (process.env.ADMIN_EMAIL || 'admin@lottery.com')) ? 'admin' : 'user';
+        const user = await User.create({ fullName, phone, email, passwordHash, role });
+
         const token = generateToken(user);
 
         res.status(201).json({
