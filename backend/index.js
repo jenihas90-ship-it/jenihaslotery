@@ -19,7 +19,15 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-// app.use(generalLimiter); // Temporarily disabled for debugging
+
+// Request logging for Vercel Dashboard
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
+// Ping route (Top level)
+app.get('/api/ping', (req, res) => res.send('pong'));
 
 // Debug Route
 app.get('/api/debug', async (req, res) => {
