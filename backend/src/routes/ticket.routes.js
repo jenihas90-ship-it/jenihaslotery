@@ -31,26 +31,29 @@ router.post('/buy', authMiddleware, [
         const found = await Ticket.findOne({ where: { ticketNumber } });
         exists = !!found;
       }
-      const ticket = await Ticket.create({ ticketNumber, userId: user.id, drawDate, price: 20 });
+      const ticket = await Ticket.create({
+        ticketNumber,
+        userId: user.id,
+        drawDate,
+        price: 20,
+        status: 'awaiting_approval'
+      });
       tickets.push(ticket);
     }
 
-    // Deduct from wallet
-    user.walletBalance -= totalCost;
-    await user.save();
-
+    // We don't deduct from wallet yet because the user will pay via bank after approval
+    // But we record the request
     await Transaction.create({
       userId: user.id,
       type: 'purchase',
       amount: totalCost,
-      status: 'completed',
-      description: `Purchased ${quantity} ticket(s) for draw on ${drawDate}`,
+      status: 'pending',
+      description: `Requested ${quantity} ticket(s) for draw on ${drawDate}. Awaiting admin approval.`,
     });
 
     res.status(201).json({
-      message: `${quantity} ticket(s) purchased successfully`,
+      message: `${quantity} ticket(s) requested successfully. Please wait for admin approval and bank details.`,
       tickets,
-      newBalance: user.walletBalance,
     });
   } catch (err) {
     console.error(err);

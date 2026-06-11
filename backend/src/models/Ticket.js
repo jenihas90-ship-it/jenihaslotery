@@ -6,7 +6,7 @@ const Ticket = sequelize.define('Ticket', {
     ticketNumber: { type: DataTypes.STRING, allowNull: false, unique: true },
     userId: { type: DataTypes.UUID, allowNull: false },
     drawDate: { type: DataTypes.DATEONLY, allowNull: false },
-    status: { type: DataTypes.ENUM('pending', 'won', 'lost'), defaultValue: 'pending' },
+    status: { type: DataTypes.ENUM('awaiting_approval', 'approved', 'rejected', 'won', 'lost'), defaultValue: 'awaiting_approval' },
     price: { type: DataTypes.FLOAT, defaultValue: 20 },
 }, { tableName: 'tickets', timestamps: true });
 

@@ -28,7 +28,7 @@ const runDraw = async (drawDate = null) => {
     }
 
     const tickets = await Ticket.findAll({
-        where: { drawDate: date, status: 'pending' },
+        where: { drawDate: date, status: 'approved' },
         include: [{ model: User, attributes: ['id', 'fullName', 'email', 'phone', 'isActive'] }],
     });
 
@@ -101,7 +101,7 @@ const runDraw = async (drawDate = null) => {
     const winnerIds = winners.map(w => w.id);
     await Ticket.update(
         { status: 'lost' },
-        { where: { drawDate: date, status: 'pending', id: { [Op.notIn]: winnerIds } } }
+        { where: { drawDate: date, status: 'approved', id: { [Op.notIn]: winnerIds } } }
     );
 
     // Update draw record

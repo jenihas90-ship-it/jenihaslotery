@@ -13,6 +13,7 @@ const ticketRoutes = require('./src/routes/ticket.routes');
 const paymentRoutes = require('./src/routes/payment.routes');
 const drawRoutes = require('./src/routes/draw.routes');
 const adminRoutes = require('./src/routes/admin.routes');
+const adminTicketRoutes = require('./src/routes/admin.tickets.routes.js');
 
 const dbInit = require('./src/middleware/dbInit');
 
@@ -57,6 +58,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/draws', drawRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/tickets', adminTicketRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'OK', time: new Date() }));
