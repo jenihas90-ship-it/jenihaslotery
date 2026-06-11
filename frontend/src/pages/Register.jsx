@@ -28,7 +28,9 @@ const Register = () => {
             toast.success('Registration successful! Welcome.');
             navigate('/dashboard');
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Registration failed');
+            console.error('Registration Error:', err);
+            const msg = err.response?.data?.message || err.message || 'Registration failed';
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
