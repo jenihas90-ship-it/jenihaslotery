@@ -59,17 +59,23 @@ const startServer = async () => {
             console.log('Default admin user created.');
         }
 
-        // Start Cron Jobs
-        initCronJobs();
+        // Start Cron Jobs (Note: This won't run on Vercel; use Vercel Cron instead)
+        if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+            initCronJobs();
+        }
 
         // Start Server
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
+        if (process.env.VERCEL !== '1') {
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+            });
+        }
     } catch (err) {
         console.error('Unable to start server:', err);
-        process.exit(1);
+        if (process.env.VERCEL !== '1') process.exit(1);
     }
 };
 
 startServer();
+
+module.exports = app;
