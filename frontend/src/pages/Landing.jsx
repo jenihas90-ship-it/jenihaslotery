@@ -9,43 +9,98 @@ const Landing = () => {
         <div className="animate-fade">
             {/* Hero Section */}
             <section style={{
-                padding: '100px 5% 60px',
+                position: 'relative',
+                padding: '120px 5% 80px',
                 textAlign: 'center',
-                background: 'radial-gradient(circle at 50% 10%, rgba(245, 197, 24, 0.05) 0%, transparent 50%)'
+                overflow: 'hidden',
+                background: 'var(--bg-dark)'
             }}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <h1 style={{ fontSize: '4rem', lineHeight: 1.1, marginBottom: '20px' }}>
-                        Daily Fortune <br />
-                        <span className="text-gradient">Just 20 ETB Away</span>
-                    </h1>
-                    <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 40px' }}>
-                        Join Ethiopia's most transparent daily lottery. Buy your ticket today and join the midnight draw for a chance to win 500 ETB!
-                    </p>
+                {/* Background Glow */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-20%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%',
+                    height: '100%',
+                    background: 'radial-gradient(circle at 50% 30%, rgba(245, 197, 24, 0.1) 0%, transparent 60%)',
+                    zIndex: 0
+                }}></div>
 
-                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-                        <Link to="/register" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem' }}>
-                            <Ticket size={22} /> Buy Your First Ticket
-                        </Link>
-                        <Link to="/winners" className="btn-secondary" style={{ padding: '1rem 2rem' }}>
-                            View Recent Winners
-                        </Link>
-                    </div>
-                </motion.div>
+                <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <span className="badge badge-primary" style={{ marginBottom: '20px' }}>Ethiopia's #1 Daily Lottery</span>
+                        <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', lineHeight: 1.1, marginBottom: '20px', fontWeight: 800 }}>
+                            Win your Fortune <br />
+                            <span className="text-gradient">Every Single Midnight</span>
+                        </h1>
+                        <p style={{ color: 'var(--text-dim)', fontSize: '1.25rem', maxWidth: '650px', margin: '0 auto 40px', lineHeight: 1.6 }}>
+                            Join thousands of winners today. Just 20 ETB gives you a chance to change your life. Transparent, secure, and instant payouts.
+                        </p>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, duration: 0.8 }}
-                    className="premium-card"
-                    style={{ maxWidth: '500px', margin: '60px auto 0', padding: '40px' }}
-                >
-                    <h3 style={{ color: 'var(--text-dim)', textTransform: 'uppercase', fontSize: '0.9rem' }}>Next Draw In</h3>
-                    <CountdownTimer />
-                </motion.div>
+                        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <Link to="/register" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem', borderRadius: '50px', boxShadow: '0 10px 30px rgba(245, 197, 24, 0.3)' }}>
+                                <Ticket size={24} /> Get Started Now
+                            </Link>
+                            <Link to="/winners" className="btn-secondary" style={{ padding: '1.2rem 2.5rem', borderRadius: '50px' }}>
+                                View Past Result
+                            </Link>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4, duration: 1 }}
+                        style={{ marginTop: '80px', position: 'relative' }}
+                    >
+                        <img
+                            src="/src/assets/hero_premium.png"
+                            alt="Lottery Premium"
+                            style={{
+                                width: '100%',
+                                maxWidth: '900px',
+                                borderRadius: '30px',
+                                boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                                border: '1px solid rgba(255,255,255,0.1)'
+                            }}
+                        />
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-20px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: '90%',
+                            background: 'rgba(10, 10, 26, 0.8)',
+                            backdropFilter: 'blur(20px)',
+                            padding: '20px',
+                            borderRadius: '20px',
+                            border: '1px solid var(--glass-border)',
+                            display: 'flex',
+                            justifyContent: 'space-around',
+                            alignItems: 'center'
+                        }}>
+                            <div>
+                                <h4 style={{ margin: 0, color: 'var(--primary)' }}>500 ETB</h4>
+                                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-dim)' }}>Jackpot</p>
+                            </div>
+                            <div style={{ width: '1px', height: '40px', background: 'var(--glass-border)' }}></div>
+                            <div>
+                                <CountdownTimer />
+                                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-dim)', textAlign: 'center' }}>Time Left</p>
+                            </div>
+                            <div style={{ width: '1px', height: '40px', background: 'var(--glass-border)' }}></div>
+                            <div>
+                                <h4 style={{ margin: 0, color: 'white' }}>Live</h4>
+                                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-dim)' }}>Status</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
             </section>
 
             {/* Prize Section */}
