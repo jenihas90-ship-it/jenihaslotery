@@ -31,51 +31,44 @@ app.use('/api/admin', adminRoutes);
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'OK', time: new Date() }));
 
-const PORT = process.env.PORT || 5000;
-
-const startServer = async () => {
+// Database Init Helper
+const initDB = async () => {
     try {
-        // Connect to Database
         await sequelize.authenticate();
-        console.log('Connected to SQLite database.');
-
-        // Sync Models (automatically creates tables)
         await sequelize.sync({ alter: true });
-        console.log('Database synced.');
 
-        // Seed Admin User if not exists
-        const adminExists = await User.findOne({ where: { email: process.env.ADMIN_EMAIL || 'admin@lottery.com' } });
+        // Seed Admin
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@lottery.com';
+        const adminExists = await User.findOne({ where: { email: adminEmail } });
         if (!adminExists) {
             const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin1234!', 12);
             await User.create({
                 fullName: 'System Admin',
                 phone: '0000000000',
-                email: process.env.ADMIN_EMAIL || 'admin@lottery.com',
+                email: adminEmail,
                 passwordHash,
                 role: 'admin',
                 isActive: true,
                 walletBalance: 0,
             });
-            console.log('Default admin user created.');
-        }
-
-        // Start Cron Jobs (Note: This won't run on Vercel; use Vercel Cron instead)
-        if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
-            initCronJobs();
-        }
-
-        // Start Server
-        if (process.env.VERCEL !== '1') {
-            app.listen(PORT, () => {
-                console.log(`Server running on port ${PORT}`);
-            });
+            console.log('Admin seeded');
         }
     } catch (err) {
-        console.error('Unable to start server:', err);
-        if (process.env.VERCEL !== '1') process.exit(1);
+        console.error('DB Init Error:', err);
     }
 };
 
-startServer();
+// Start Logic
+if (process.env.VERCEL === '1') {
+    // On Vercel, we hope the DB is ready or it will lazy-init
+    initDB();
+} else {
+    // Locally, we wait for DB before listening
+    const PORT = process.env.PORT || 5000;
+    initDB().then(() => {
+        initCronJobs();
+        app.listen(PORT, () => console.log(`Server on ${PORT}`));
+    });
+}
 
 module.exports = app;
