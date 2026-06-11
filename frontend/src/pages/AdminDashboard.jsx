@@ -11,17 +11,21 @@ const AdminDashboard = () => {
     const [salesData, setSalesData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [runningDraw, setRunningDraw] = useState(false);
+    const [view, setView] = useState('overview');
+    const [pendingTickets, setPendingTickets] = useState([]);
 
     const fetchAdminData = async () => {
         try {
-            const [statsRes, usersRes, salesRes] = await Promise.all([
+            const [statsRes, usersRes, salesRes, ticketsRes] = await Promise.all([
                 api.get('/admin/stats'),
                 api.get('/admin/users'),
-                api.get('/admin/reports/sales')
+                api.get('/admin/reports/sales'),
+                api.get('/admin/tickets/pending')
             ]);
             setStats(statsRes.data);
             setUsers(usersRes.data);
             setSalesData(salesRes.data.reverse());
+            setPendingTickets(ticketsRes.data);
         } catch (err) {
             toast.error('Failed to load admin data');
         } finally {
@@ -40,6 +44,16 @@ const AdminDashboard = () => {
             fetchAdminData();
         } catch (err) {
             toast.error('Operation failed');
+        }
+    };
+
+    const handleTicketAction = async (ticketId, action) => {
+        try {
+            await api.post(`/admin/tickets/${ticketId}/${action}`);
+            toast.success(`Ticket ${action}d successfully`);
+            fetchAdminData();
+        } catch (err) {
+            toast.error(`Failed to ${action} ticket`);
         }
     };
 
@@ -68,7 +82,25 @@ const AdminDashboard = () => {
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                 <div>
                     <h1 style={{ fontSize: '2.5rem' }}>Admin <span className="text-gradient">Control</span></h1>
-                    <p style={{ color: 'var(--text-dim)' }}>System overview and management</p>
+                    <div style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
+                        <button
+                            onClick={() => setView('overview')}
+                            style={{ color: view === 'overview' ? 'var(--primary)' : 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: view === 'overview' ? 'bold' : 'normal' }}
+                        >
+                            Overview
+                        </button>
+                        <button
+                            onClick={() => setView('tickets')}
+                            style={{ color: view === 'tickets' ? 'var(--primary)' : 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: view === 'tickets' ? 'bold' : 'normal', position: 'relative' }}
+                        >
+                            Ticket Approvals
+                            {pendingTickets.length > 0 && (
+                                <span style={{ position: 'absolute', top: '-8px', right: '-15px', background: 'var(--danger)', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '10px' }}>
+                                    {pendingTickets.length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
                 </div>
                 <button
                     onClick={handleRunDraw}
