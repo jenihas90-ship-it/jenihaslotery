@@ -19,7 +19,26 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(generalLimiter);
+// app.use(generalLimiter); // Temporarily disabled for debugging
+
+// Debug Route
+app.get('/api/debug', async (req, res) => {
+    try {
+        await sequelize.authenticate();
+        res.json({
+            status: 'Backend is ALIVE',
+            database: 'Connected',
+            env: {
+                VERCEL: process.env.VERCEL,
+                NODE_ENV: process.env.NODE_ENV,
+                HAS_JWT_SECRET: !!process.env.JWT_SECRET
+            },
+            time: new Date()
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message, stack: err.stack });
+    }
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);
