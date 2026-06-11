@@ -22,5 +22,11 @@
       "source": "/(.*)",
       "destination": "frontend/$1"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/admin/draw/run-now",
+      "schedule": "0 0 * * *"
+    }
   ]
 }
