@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { Wallet, Ticket, History, Plus, AlertCircle, Loader2, User, Mail, Phone, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
+import { Wallet, Ticket, History, Plus, AlertCircle, Loader2, User, Mail, Phone, Calendar, TrendingUp, RefreshCw, ShieldAlert } from 'lucide-react';
 import PaymentModal from '../components/PaymentModal';
 
 const TAB_OVERVIEW = 'overview';
@@ -91,12 +92,19 @@ const Dashboard = () => {
                         </h1>
                         <p style={{ color: 'var(--text-dim)', marginTop: '4px' }}>Welcome back, {user.fullName?.split(' ')[0]} 👋</p>
                     </div>
-                    <button
-                        onClick={() => fetchData(true)}
-                        style={{ color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}
-                    >
-                        <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} /> Refresh
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        {user.role === 'admin' && (
+                            <Link to="/admin" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid var(--accent)', padding: '4px 10px', borderRadius: '8px' }}>
+                                <ShieldAlert size={16} /> Admin Panel
+                            </Link>
+                        )}
+                        <button
+                            onClick={() => fetchData(true)}
+                            style={{ color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}
+                        >
+                            <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} /> Refresh
+                        </button>
+                    </div>
                 </div>
             </header>
 

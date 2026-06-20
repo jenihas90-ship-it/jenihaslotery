@@ -10,6 +10,8 @@ const User = sequelize.define('User', {
     role: { type: DataTypes.ENUM('user', 'admin'), defaultValue: 'user' },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     walletBalance: { type: DataTypes.FLOAT, defaultValue: 0 },
+    otpCode: { type: DataTypes.STRING, allowNull: true },
+    otpExpires: { type: DataTypes.DATE, allowNull: true },
     resetToken: { type: DataTypes.STRING, allowNull: true },
     resetTokenExpiry: { type: DataTypes.DATE, allowNull: true },
 }, { tableName: 'users', timestamps: true });

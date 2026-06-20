@@ -22,6 +22,13 @@ const Login = () => {
             navigate('/dashboard');
         } catch (err) {
             console.error('Login Error:', err);
+
+            if (err.response?.data?.requiresVerification) {
+                toast.warning('Account not verified. Please check your email.');
+                navigate(`/verify-otp?email=${encodeURIComponent(err.response.data.email)}`);
+                return;
+            }
+
             const msg = err.response?.data?.message || err.message || 'Login failed';
             toast.error(msg);
         } finally {

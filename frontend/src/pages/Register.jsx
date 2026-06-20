@@ -40,8 +40,8 @@ const Register = () => {
                 phone: formData.phone,
                 password: formData.password,
             });
-            toast.success('Registration successful! Welcome.');
-            navigate('/dashboard');
+            toast.success('Registration successful! Please verify your email.');
+            navigate(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
         } catch (err) {
             console.error('Registration Error:', err);
             const msg = err.response?.data?.message ||

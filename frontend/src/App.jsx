@@ -13,6 +13,7 @@ import Winners from './pages/Winners';
 import AdminDashboard from './pages/AdminDashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import VerifyOtp from './pages/VerifyOtp';
 
 // Components
 import Navbar from './components/Navbar';
@@ -43,6 +44,7 @@ function App() {
               <Route path="/winners" element={<Winners />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-otp" element={<VerifyOtp />} />
               <Route
                 path="/dashboard"
                 element={

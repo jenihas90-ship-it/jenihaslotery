@@ -33,8 +33,19 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         const res = await api.post('/auth/register', userData);
+        // We don't log in yet - user must verify OTP
+        return res.data;
+    };
+
+    const verifyOtp = async (email, otpCode) => {
+        const res = await api.post('/auth/verify-otp', { email, otpCode });
         localStorage.setItem('lottery_token', res.data.token);
         setUser(res.data.user);
+        return res.data;
+    };
+
+    const resendOtp = async (email) => {
+        const res = await api.post('/auth/resend-otp', { email });
         return res.data;
     };
 

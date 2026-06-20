@@ -26,27 +26,109 @@ router.post('/register', authLimiter, [
     try {
         const { fullName, phone, email, password } = req.body;
         const existingEmail = await User.findOne({ where: { email } });
-        if (existingEmail) return res.status(409).json({ message: 'Email already registered' });
+        if (existingEmail && existingEmail.isActive) return res.status(409).json({ message: 'Email already registered' });
 
         const existingPhone = await User.findOne({ where: { phone } });
-        if (existingPhone) return res.status(409).json({ message: 'Phone number already registered' });
+        if (existingPhone && existingPhone.isActive) return res.status(409).json({ message: 'Phone number already registered' });
 
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // Auto-assign admin role
-        const role = (email === (process.env.ADMIN_EMAIL || 'admin@lottery.com')) ? 'admin' : 'user';
-        const user = await User.create({ fullName, phone, email, passwordHash, role });
+        // Generate 6-digit OTP
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-        const token = generateToken(user);
+        let user;
+        if (existingEmail) {
+            // Update existing unverified user
+            user = existingEmail;
+            user.fullName = fullName;
+            user.phone = phone;
+            user.passwordHash = passwordHash;
+            user.otpCode = otpCode;
+            user.otpExpires = otpExpires;
+            await user.save();
+        } else {
+            // Create new unverified user
+            user = await User.create({
+                fullName, phone, email, passwordHash,
+                otpCode, otpExpires,
+                isActive: false
+            });
+        }
+
+        // Send OTP via Email
+        await sendEmail({
+            to: email,
+            subject: 'Verify Your Email - Daily Lottery',
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; background: #0a0a1a; color: #fff; border-radius: 10px;">
+                    <h2 style="color: #f5c518;">Welcome to Daily Lottery!</h2>
+                    <p>Your verification code is:</p>
+                    <h1 style="background: rgba(245,197,24,0.1); padding: 10px; border: 1px dashed #f5c518; text-align: center; letter-spacing: 5px;">${otpCode}</h1>
+                    <p>This code will expire in 10 minutes.</p>
+                    <p style="color: #888; font-size: 12px;">If you didn't request this, please ignore this email.</p>
+                </div>
+            `
+        });
 
         res.status(201).json({
-            message: 'Registration successful',
-            token,
-            user: { id: user.id, fullName: user.fullName, email: user.email, phone: user.phone, walletBalance: user.walletBalance, role: user.role },
+            message: 'OTP sent to your email. Please verify to complete registration.',
+            email: user.email
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error', error: err.name, details: err.message });
+    }
+});
+
+// POST /api/auth/verify-otp
+router.post('/verify-otp', authLimiter, async (req, res) => {
+    try {
+        const { email, otpCode } = req.body;
+        const user = await User.findOne({ where: { email, otpCode } });
+
+        if (!user || user.otpExpires < new Date()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        user.isActive = true;
+        user.otpCode = null;
+        user.otpExpires = null;
+        await user.save();
+
+        const token = generateToken(user);
+
+        res.json({
+            message: 'Verification successful',
+            token,
+            user: { id: user.id, fullName: user.fullName, email: user.email, phone: user.phone, walletBalance: user.walletBalance, role: user.role },
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/auth/resend-otp
+router.post('/resend-otp', authLimiter, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email, isActive: false } });
+        if (!user) return res.status(404).json({ message: 'User not found or already verified' });
+
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.otpCode = otpCode;
+        user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+        await user.save();
+
+        await sendEmail({
+            to: email,
+            subject: 'New Verification Code - Daily Lottery',
+            html: `<p>Your new verification code is: <strong>${otpCode}</strong></p>`
+        });
+
+        res.json({ message: 'New OTP sent to your email' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -62,7 +144,14 @@ router.post('/login', authLimiter, [
         const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-        if (!user.isActive) return res.status(403).json({ message: 'Account suspended. Contact support.' });
+
+        if (!user.isActive) {
+            return res.status(403).json({
+                message: 'Account not verified. Please check your email.',
+                requiresVerification: true,
+                email: user.email
+            });
+        }
 
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
