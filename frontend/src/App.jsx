@@ -11,13 +11,19 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Winners from './pages/Winners';
 import AdminDashboard from './pages/AdminDashboard';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Components
 import Navbar from './components/Navbar';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid var(--glass-border)', borderTopColor: 'var(--primary)', borderRadius: '50%' }} />
+    </div>
+  );
   if (!user) return <Navigate to="/login" />;
   if (adminOnly && user.role !== 'admin') return <Navigate to="/dashboard" />;
   return children;
@@ -35,6 +41,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/winners" element={<Winners />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="/dashboard"
                 element={
@@ -51,9 +59,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
-          <ToastContainer position="bottom-right" theme="dark" />
+          <ToastContainer
+            position="bottom-right"
+            theme="dark"
+            toastStyle={{ background: 'var(--bg-accent)', border: '1px solid var(--glass-border)' }}
+          />
         </div>
       </Router>
     </AuthProvider>

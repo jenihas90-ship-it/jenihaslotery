@@ -33,6 +33,9 @@ app.use((req, res, next) => {
 // Ping route (Top level)
 app.get('/api/ping', (req, res) => res.send('pong'));
 
+// Test route (No DB)
+app.get('/api/test', (req, res) => res.json({ message: 'API is reachable', time: new Date() }));
+
 // Debug Route
 app.get('/api/debug', async (req, res) => {
     try {
